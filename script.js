@@ -3,18 +3,22 @@ function debounce(callback, delay, immediate = false) {
 
     return function(...args) {
         const context = this;
-
-        const later = () => {
-            timeout = null;
-            if (!immediate) callback.apply(context, args);
-        };
-
         const callNow = immediate && !timeout;
 
+        // Clear the timeout if the function is called again within the delay
         clearTimeout(timeout);
-        timeout = setTimeout(later, delay);
 
-        if (callNow) callback.apply(context, args);
+        timeout = setTimeout(() => {
+            timeout = null; // Reset timeout after the delay
+
+            if (!immediate) {
+                callback.apply(context, args);
+            }
+        }, delay);
+
+        if (callNow) {
+            callback.apply(context, args);
+        }
     };
 }
 
